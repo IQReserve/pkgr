@@ -7,17 +7,20 @@ export APP_USER="<%= user %>"
 export APP_GROUP="<%= group %>"
 export APP_HOME="<%= home %>"
 
+<% u_option = uid ? "-u #{uid} " : "" %>
+<% g_option = gid ? "--gid #{gid} " : "" %>
+
 if ! getent passwd "${APP_USER}" > /dev/null; then
   if [ -f /etc/redhat-release ] || [ -f /etc/system-release ] || [ -f /etc/SuSE-release ]; then
     if ! getent group "${APP_GROUP}" > /dev/null ; then
-      groupadd --system "${APP_GROUP}"
+      groupadd "${APP_GROUP}" <%= g_option %>--system
     fi
-    useradd "${APP_USER}" -g "${APP_GROUP}" --system --create-home --shell /bin/bash
+    useradd "${APP_USER}" -g "${APP_GROUP}" <%= u_option %>--system --create-home --shell /bin/bash
   else
     if ! getent group "${APP_GROUP}" > /dev/null; then
-      addgroup "${APP_GROUP}" --system --quiet
+      addgroup "${APP_GROUP}" <%= g_option %>--system --quiet
     fi
-    adduser "${APP_USER}" --disabled-login --ingroup "${APP_GROUP}" --system --quiet --shell /bin/bash
+    adduser "${APP_USER}" <%= u_option %>--disabled-login --ingroup "${APP_GROUP}" --system --quiet --shell /bin/bash
   fi
 fi
 

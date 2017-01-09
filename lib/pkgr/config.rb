@@ -96,6 +96,14 @@ module Pkgr
       @table[:user] || name
     end
 
+    def uid
+      @table[:uid]
+    end
+
+    def gid
+      @table[:gid]
+    end
+
     def group
       @table[:group] || user
     end
@@ -220,6 +228,8 @@ module Pkgr
         "--name \"#{name}\"",
         "--version \"#{version}\"",
         "--user \"#{user}\"",
+        "--uid \"#{uid}\"",
+        "--gid \"#{gid}\"",
         "--group \"#{group}\"",
         "--iteration \"#{iteration}\"",
         "--homepage \"#{homepage}\"",
