@@ -153,6 +153,13 @@ module Pkgr
       :type => :boolean,
       :desc => "Disable installing CLI"
 
+    method_option :uid,
+      :type => :numeric,
+      :desc => "Can be used for overriding default USER_ID number"
+    method_option :gid,
+      :type => :numeric,
+      :desc => "Can be used for overriding default GROUP_ID number"
+
     def package(tarball)
       Pkgr.level = Logger::INFO if options[:verbose]
       Pkgr.level = Logger::DEBUG if options[:debug]
