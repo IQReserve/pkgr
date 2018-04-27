@@ -13,6 +13,7 @@ LOGS="/var/log/${APP_NAME}"
 chown -R ${APP_USER}.${APP_GROUP} ${APP_HOME}
 
 # link app log directory to /var/log/NAME
+mkdir -p ${LOGS}
 rm -rf ${HOME_LOGS}
 ln -fs ${LOGS} ${HOME_LOGS}
 chown -R ${APP_USER}.${APP_GROUP} ${LOGS}
@@ -43,7 +44,7 @@ echo "=============="
 # Call custom postinstall script.
 CUSTOM_POSTINSTALL_SCRIPT="<%= Base64.encode64 File.read(after_install) %>"
 
-tmpfile=$(mktemp)
+<%= "tmpfile=$(#{"TMPDIR=\"#{tmpdir}\" " if tmpdir}mktemp)" %>
 chmod a+x "${tmpfile}"
 echo "${CUSTOM_POSTINSTALL_SCRIPT}" | base64 -d - > ${tmpfile}
 

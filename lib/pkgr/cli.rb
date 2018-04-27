@@ -31,7 +31,7 @@ module Pkgr
 
     method_option :buildpack,
       :type => :string,
-      :desc => "Custom buildpack to use"
+      :desc => "Custom buildpack to use. May be a single string or a list."
     method_option :buildpack_list,
       :type => :string,
       :desc => "Specify a file containing a list of buildpacks to use (--buildpack takes precedence if given)"
@@ -51,9 +51,21 @@ module Pkgr
     method_option :runner,
       :type => :string,
       :desc => "Force a specific runner (e.g. upstart-1.5, sysv-lsb-1.3)"
+    method_option :logrotate_frequency,
+      :type => :string,
+      :desc => "Set logrotate backlog",
+      :enum => %w(daily weekly monthly yearly),
+      :default => "daily"
+    method_option :logrotate_backlog,
+      :type => :numeric,
+      :desc => "Set logrotate backlog",
+      :default => 14
     method_option :homepage,
       :type => :string,
       :desc => "Project homepage"
+    method_option :home,
+      :type => :string,
+      :desc => "Project home"
     method_option :description,
       :type => :string,
       :desc => "Project description"
@@ -152,6 +164,9 @@ module Pkgr
     method_option :disable_cli,
       :type => :boolean,
       :desc => "Disable installing CLI"
+    method_option :tmpdir,
+      :type => :string,
+      :desc => 'Set a custom tmpdir for hook scripts to get created in'
 
     method_option :uid,
       :type => :numeric,

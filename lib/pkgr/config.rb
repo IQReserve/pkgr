@@ -92,6 +92,14 @@ module Pkgr
       @table[:home] || "/opt/#{name}"
     end
 
+    def logrotate_frequency
+      @table[:logrotate_frequency] || "daily"
+    end
+
+    def logrotate_backlog
+      @table[:logrotate_backlog] || 14
+    end
+
     def user
       @table[:user] || name
     end
@@ -106,6 +114,10 @@ module Pkgr
 
     def group
       @table[:group] || user
+    end
+
+    def tmpdir
+      @table[:tmpdir]
     end
 
     def architecture
@@ -130,6 +142,10 @@ module Pkgr
 
     def env
       @table[:env].is_a?(Pkgr::Env) ? @table[:env] : Pkgr::Env.new(@table[:env])
+    end
+
+    def buildpacks
+      @table[:buildpack].is_a?(String) ? @table[:buildpack].split(",") : @table[:buildpack]
     end
 
     def valid?
@@ -233,6 +249,7 @@ module Pkgr
         "--group \"#{group}\"",
         "--iteration \"#{iteration}\"",
         "--homepage \"#{homepage}\"",
+        "--home \"#{home}\"",
         "--architecture \"#{architecture}\"",
         "--description \"#{description}\"",
         "--maintainer \"#{maintainer}\"",
@@ -253,6 +270,8 @@ module Pkgr
       args.push "--buildpack_list \"#{buildpack_list}\"" unless buildpack_list.nil? || buildpack_list.empty?
       args.push "--force-os \"#{force_os}\"" unless force_os.nil? || force_os.empty?
       args.push "--runner \"#{runner}\"" unless runner.nil? || runner.empty?
+      args.push "--logrotate-frequency \"#{logrotate_frequency}\"" unless logrotate_frequency.nil? || logrotate_frequency.empty?
+      args.push "--logrotate-backlog \"#{logrotate_backlog}\"" unless logrotate_backlog.nil?
       args.push "--env #{env.variables.map{|v| "\"#{v}\""}.join(" ")}" if env.present?
       args.push "--auto" if auto
       args.push "--verbose" if verbose
@@ -261,6 +280,7 @@ module Pkgr
       args.push "--verify" if verify
       args.push "--no-clean" if !clean
       args.push "--no-edge" if !edge
+      args.push "--tmpdir" if !tmpdir
       args
     end
   end

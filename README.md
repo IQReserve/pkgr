@@ -1,12 +1,16 @@
 # pkgr
 
+[![Build Status](https://travis-ci.org/crohr/pkgr.svg?branch=master)](https://travis-ci.org/crohr/pkgr)
+
 ## Goal
 
 Make debian or rpm packages out of any app, including init script, crons,
 logrotate, etc. Excellent way to distribute apps or command line tools without
 complicated installation instructions.
 
-Hosted service available at <https://packager.io/>. Free for OpenSource apps.
+Hosted service available at [Packager.io][packager-io]. Free for OpenSource apps.
+
+[packager-io]: https://packager.io/
 
 ## Officially supported languages
 
@@ -15,8 +19,9 @@ Hosted service available at <https://packager.io/>. Free for OpenSource apps.
 * Python
 * Go
 
-You can also try out PHP support by specifying the following buildpack:
-`https://github.com/pkgr/heroku-buildpack-php#buildcurl`
+In beta:
+
+* PHP, using the following buildpack: `https://github.com/pkgr/heroku-buildpack-php#buildcurl`
 
 You can also point to other buildpacks
 ([doc](https://packager.io/documentation/customizing-the-build/#buildpack)).
@@ -27,6 +32,7 @@ They may just work.
 * Ubuntu 16.04 ("xenial")
 * Ubuntu 14.04 ("trusty")
 * Ubuntu 12.04 ("precise")
+* Debian 9 ("stretch")
 * Debian 8 ("jessie")
 * Debian 7 ("wheezy")
 * RHEL/CentOS 7
@@ -38,7 +44,7 @@ They may just work.
 
 ## Examples
 
-See <https://packager.io/> for examples of apps packaged with `pkgr` (Gitlab, OpenProject, Discourse, etc.).
+See [Packager.io][packager-io] for examples of apps packaged with `pkgr` (Gitlab, OpenProject, Discourse, etc.).
 
 ## Installation
 
@@ -54,11 +60,11 @@ Or, installing as a gem, on debian-based machines:
 
 ## Usage
 
-To package your app, you can either execute `pkgr` locally if your app repository is on the same machine:
+To package your app, execute `pkgr` against your app's repository:
 
     pkgr package path/to/app/repo
 
-The resulting .deb package will be in your current working directory.
+The resulting `.deb` or `.rpm` package will be in your current working directory. That is, you need to run `pkgr` on the target distribution for which you want to generate a package.
 
 Full command line options are given below:
 
@@ -75,7 +81,13 @@ Full command line options are given below:
       [--architecture=ARCHITECTURE]                  # Target architecture for the package
                                                      # Default: x86_64
       [--runner=RUNNER]                              # Force a specific runner (e.g. upstart-1.5, sysv-lsb-1.3)
-      [--homepage=HOMEPAGE]                          # Project homepage
+      [--logrotate-frequency=FREQUENCY]              # Set logrotate frequency
+                                                     # Default: daily
+                                                     # Possible values: daily, weekly, monthly, yearly
+      [--logrotate-backlog=BACKLOG]                  # Set logrotate backlog
+                                                     # Default: 14
+      [--homepage=HOMEPAGE]                          # Project homepage (e.g. "https://pkgr.example.org")
+      [--home=HOME]                                  # Project home (e.g. "/usr/share/PACKAGE_HOME")
       [--description=DESCRIPTION]                    # Project description
       [--category=CATEGORY]                          # Category this package belongs to
                                                      # Default: none
@@ -147,11 +159,13 @@ Finally, it's a great way to share your open source software with your users and
 
 * Your app will reside in `/opt/app-name`.
 
-* You'll also get upstart (or sysvinit) initialization scripts that you can use directly:
+* You'll also get upstart, systemd, or sysvinit initialization scripts (depending on your distribution) that you can use directly:
 
         service my-app start/stop/restart/status
 
-* Logs will be stored in `/var/log/app-name/`, with a proper logrotate config automatically added.
+  Note: init scripts are generated only after you've done a `scale` command for the process type, e.g. `my-app scale web=1`.
+
+* Logs will be stored in `/var/log/app-name/`, with a proper logrotate config automatically added. For systemd-based distributions, you will find the logs in the systemd journal.
 
 * Config files can be added in `/etc/app-name/`
 
